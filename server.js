@@ -13,31 +13,28 @@ const CK = "ck_638b443f480816111e90a44e462329c44c3732b1";
 const CS = "cs_a661347493ca86cc156de3a624a35b7eabb51998";
 
 // ADD TO CART
-app.post("/add-to-cart", async (req, res) => {
-  try {
-    const { productId } = req.body;
+app.post("/add-to-cart", (req, res) => {
+  const { userId, productId, quantity } = req.body;
 
-    const response = await fetch(
-      `${BASE_URL}/wp-json/wc/store/v1/cart/add-item`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          id: productId
-        })
-      }
-    );
-
-    const data = await response.json();
-    res.json(data);
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  if (!cartStore[userId]) {
+    cartStore[userId] = [];
   }
-});
 
+  const existingItem = cartStore[userId].find(
+    item => item.productId === productId
+  );
+
+  if (existingItem) {
+    existingItem.quantity += quantity;
+  } else {
+    cartStore[userId].push({ productId, quantity });
+  }
+
+  res.json({
+    message: "Item added",
+    cart: cartStore[userId]
+  });
+});
 // GET CART
 app.get("/cart", async (req, res) => {
   try {
