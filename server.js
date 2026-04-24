@@ -36,18 +36,12 @@ app.post("/add-to-cart", (req, res) => {
   });
 });
 // GET CART
-app.get("/cart", async (req, res) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/wp-json/wc/store/v1/cart`
-    );
+app.get("/cart/:userId", (req, res) => {
+  const { userId } = req.params;
 
-    const data = await response.json();
-    res.json(data);
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json({
+    cart: cartStore[userId] || []
+  });
 });
 
 // PLACE ORDER
