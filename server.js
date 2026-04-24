@@ -1,5 +1,5 @@
 const express = require("express");
-const fetch = require("node-fetch");
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const cors = require("cors");
 
 const app = express();
@@ -73,7 +73,11 @@ app.post("/place-order", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+app.get("/", (req, res) => {
+  res.send("Navakart Backend Running ✅");
+});
+const PORT = process.env.PORT || 10000;
 
-app.listen(10000, () => {
-  console.log("Server running on port 10000");
+app.listen(PORT, () => {
+  console.log("Server running...");
 });
